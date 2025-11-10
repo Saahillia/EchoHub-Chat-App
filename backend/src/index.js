@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(
     cors({origin: [
         "http://localhost:5173",            
-        "echo-hub-chat-app.vercel.app",       
+        "https://echo-hub-chat-app.vercel.app/login",       
         ],
     credentials: true,
     })
