@@ -11,6 +11,15 @@ import { app, server } from "./lib/socket.js";
 
 dotenv.config();
 
+app.use(cors({
+    origin: [
+        "http://localhost:5173",
+        "https://echohub-chat.vercel.app"
+    ],
+    credentials: true,
+}));
+
+
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
