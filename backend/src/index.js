@@ -11,48 +11,35 @@ import { app, server } from "./lib/socket.js";
 
 dotenv.config();
 
+
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
-// ---------- CORS: allow local + deployed frontends ----------
-const allowedOrigins = [
-    "http://localhost:5173",
-    // add ALL your deployed frontend URLs here:
-    "https://echo-hub-chat-app-qho7.vercel.app",
-    "https://echohub-chat.vercel.app", // keep as spare if you rename
-    ];
-
-    app.use(
+// Middleware
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(cookieParser());
+app.use(
     cors({
-        origin(origin, cb) {
-        // allow server-to-server/no-origin (like curl, Postman) and allowed origins
-        if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-        console.log("CORS blocked:", origin);
-        return cb(new Error("Not allowed by CORS"));
-        },
-        credentials: true, // allow cookies/authorization headers
+        origin: "http://localhost:5173",
+        credentials: true,
     })
-    );
+);
 
-    // ---------- Standard middleware ----------
-    app.use(express.json({ limit: "10mb" }));
-    app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-    app.use(cookieParser());
+// API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
 
-    // ---------- API routes ----------
-    app.use("/api/auth", authRoutes);
-    app.use("/api/messages", messageRoutes);
-
-    // ---------- Optional: serve frontend when building both together ----------
-    if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../frontend/dist")));
-    // Express 5-safe fallback (no app.get('*'))
+
+    // Use app.use instead of app.get('*') to avoid path-to-regexp error
     app.use((req, res) => {
         res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
     });
     }
 
-    // ---------- Start server ----------
+    // Start Server
     server.listen(PORT, () => {
     console.log(`✅ Server running on PORT: ${PORT}`);
     connectDB();
