@@ -3,43 +3,46 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
+
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
-import { app, server } from "./lib/socket.js"; // Make sure this is imported properly
+import { app, server } from "./lib/socket.js";
 
 dotenv.config();
+
 
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
-// Middlewares
+// Middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(
-    cors({
-        origin: [
-        "http://localhost:5173", // local dev
-        process.env.FRONTEND_URL, // your render frontend URL
+    cors({origin: [
+        "http://localhost:5173",            
+        "https://echo-hub-chat-app.vercel.app/login",       
         ],
-        credentials: true,
+    credentials: true,
     })
-    );
+);
 
-    // API routes
-    app.use("/api/auth", authRoutes);
-    app.use("/api/messages", messageRoutes);
+// API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
 
-    // Render deployment fix - serve frontend
-    if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "/frontend/dist")));
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-    app.get("*", (_, res) => {
-        res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+    // Use app.use instead of app.get('*') to avoid path-to-regexp error
+    app.use((req, res) => {
+        res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
     });
     }
 
+    // Start Server
     server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`✅ Server running on PORT: ${PORT}`);
+    connectDB();
 });
