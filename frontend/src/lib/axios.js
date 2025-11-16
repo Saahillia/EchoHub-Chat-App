@@ -10,4 +10,5 @@ const BACKEND = import.meta.env.VITE_BACKEND_URL || (import.meta.env.MODE === "d
 export const axiosInstance = axios.create({
     baseURL: BACKEND ? `${BACKEND}/api` : "/api",
     withCredentials: true,
+    transports: ["websocket", "polling"],
 });
