@@ -26,7 +26,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: [
+        "http://localhost:5173",              // local dev
+        "https://echohub-chat-app-2.onrender.com",   // your frontend
+    ],
         credentials: true,
     })
 );
@@ -35,7 +38,7 @@ app.use(
  * Routes (mount under /api)
  */
 app.use("/api/auth", authRoutes);
-app.use("/api/message", messageRoutes);
+app.use("/api/messages", messageRoutes);
 
 /**
  * Serve frontend in production if you choose to serve from backend (optional)

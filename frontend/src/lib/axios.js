@@ -1,14 +1,32 @@
 import axios from "axios";
 
 /**
- * set VITE_BACKEND_URL in frontend environment on Render.
- * Example: VITE_BACKEND_URL = https://your-backend.onrender.com
- * axios will call `${VITE_BACKEND_URL}/api` in production.
+ * BACKEND URL RESOLUTION LOGIC
+ * -----------------------------
+ * 1. Uses VITE_BACKEND_URL on Render deployment.
+ * 2. Uses localhost in development.
+ * 3. Guarantees clean URL (no double slashes, no empty URLs).
  */
-const BACKEND = import.meta.env.VITE_BACKEND_URL || (import.meta.env.MODE === "development" ? "http://localhost:5001" : "");
+
+const ENV = import.meta.env;
+
+// Determine backend URL
+let BACKEND_URL =
+    ENV.VITE_BACKEND_URL ||
+    (ENV.MODE === "development" ? "http://localhost:5001" : "/");
+
+// Remove trailing slash so `${BACKEND_URL}/api` is always correct
+if (BACKEND_URL?.endsWith("/")) {
+    BACKEND_URL = BACKEND_URL.slice(0, -1);
+}
+
+// Fallback if BACKEND_URL is empty (should never happen on Render)
+const BASE_URL = BACKEND_URL ? `${BACKEND_URL}/api` : "/api";
 
 export const axiosInstance = axios.create({
-    baseURL: BACKEND ? `${BACKEND}/api` : "/api",
+    baseURL: BASE_URL,
     withCredentials: true,
-    transports: ["websocket", "polling"],
+    headers: {
+        "Content-Type": "application/json",
+    },
 });

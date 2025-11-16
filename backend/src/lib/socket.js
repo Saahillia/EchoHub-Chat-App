@@ -11,7 +11,10 @@ const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 
 const io = new Server(server, {
     cors: {
-        origin: CLIENT_URL,
+        origin: [
+        "http://localhost:5173",
+        "https://echohub-chat-app-2.onrender.com",
+        ],
         methods: ["GET", "POST"],
         credentials: true,
     },
