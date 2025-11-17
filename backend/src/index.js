@@ -27,8 +27,8 @@ app.use(cookieParser());
 app.use(
     cors({
         origin: [
-        "http://localhost:5173",              // local dev
-        "https://echohub-chat-app-2.onrender.com",   // your frontend
+            "http://localhost:5173" ,                    // local dev
+            CLIENT_URL                              // your frontend
     ],
         credentials: true,
     })
