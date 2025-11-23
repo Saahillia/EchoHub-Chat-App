@@ -40,7 +40,7 @@ io.on("connection", (socket) => {
     if (userId) userSocketMap[userId] = socket.id;
 
     // Broadcast online users to all clients
-    io.emit("getOnlineUsers", Object.localhostkeys(userSocketMap));
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
     socket.on("sendMessage", ({ toUserId, message }) => {
         const toSocketId = userSocketMap[toUserId];
