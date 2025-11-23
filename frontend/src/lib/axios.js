@@ -13,7 +13,7 @@ const ENV = import.meta.env;
 // Determine backend URL
 let BACKEND_URL =
     ENV.VITE_BACKEND_URL ||
-    (ENV.MODE === "development" ? "http://localhost:5001" : "/");
+    (ENV.MODE === "development" ? "http://localhost:5001" : "https://echohub-chat-app-1.onrender.com");
 
 // Remove trailing slash so `${BACKEND_URL}/api` is always correct
 if (BACKEND_URL?.endsWith("/")) {
