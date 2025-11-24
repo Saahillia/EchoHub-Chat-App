@@ -4,6 +4,10 @@ import express from "express";          // Importing Express to attach middlewar
 
 // Create an Express application instance
 const app = express();
+// Allow large JSON bodies (fixes 413 errors for image messages)
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
 
 // Create an actual HTTP server from the Express app.
 // Socket.IO attaches to this server to upgrade HTTP → WebSocket connection.
