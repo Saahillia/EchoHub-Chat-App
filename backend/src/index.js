@@ -48,7 +48,7 @@ app.use(
     cors({
         origin: [
             "http://localhost:5173",   // Development frontend
-            CLIENT_URL                 // Production frontend
+            "https://echohub-chat-app-2.onrender.com"                // Production frontend
         ],
         credentials: true,             // Allow cookies, JWT, sessions
     })

@@ -63,11 +63,21 @@ export const sendMessages = async(req, res) => {
         const senderId = req.user._id;             // ID of sender (logged-in user)
 
         let imageUrl;
+
         // If an image is included, upload to Cloudinary
-        if(image){
-            const uploadResponse = await cloudinary.uploader.upload(image);
-            imageUrl = uploadResponse.secure_url;  // Secure URL returned by Cloudinary
+        if (image) {
+            // Add Base64 prefix if missing
+            const base64Image = image.startsWith("data:")
+                ? image
+                : `data:image/png;base64,${image}`;
+
+            const uploadResponse = await cloudinary.uploader.upload(base64Image, {
+                resource_type: "image",
+            });
+
+            imageUrl = uploadResponse.secure_url;
         }
+
         // Create a new message entry
         const newMessage = new Message({
             senderId,
