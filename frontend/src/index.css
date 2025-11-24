@@ -1,3 +1,25 @@
+/* 
+    | Tailwind Base Styles
+    | ---------------------
+    | Injects Tailwind's base/reset styles (modern alternative to normalize.css).
+    | Ensures consistent styling across browsers by resetting HTML element defaults.
+*/
 @tailwind base;
+
+/*
+    | Tailwind Component Classes
+    | ---------------------------
+    | Loads pre-built component classes such as buttons, forms,
+    | cards, alerts, inputs, and other UI primitives.
+    | This layer can also be extended using @layer components.
+*/
 @tailwind components;
+
+/*
+    | Tailwind Utility Classes
+    | -------------------------
+    | Loads all utility classes (e.g., flex, p-4, text-center, shadow).
+    | These power Tailwind’s utility-first styling approach.
+    | Custom utility classes can be added using @layer utilities.
+*/
 @tailwind utilities;

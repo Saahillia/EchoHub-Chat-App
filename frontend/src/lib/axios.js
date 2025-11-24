@@ -1,29 +1,50 @@
-import axios from "axios";
+import axios from "axios";              // Import Axios for making HTTP requests to the backend API
 
 /**
+ * ======================================================================
  * BACKEND URL RESOLUTION LOGIC
- * -----------------------------
- * 1. Uses VITE_BACKEND_URL on Render deployment.
- * 2. Uses localhost in development.
- * 3. Guarantees clean URL (no double slashes, no empty URLs).
+ * ======================================================================
+ * Purpose:
+ * 1. Choose the correct backend URL based on environment.
+ * 2. Ensure clean URL formatting (avoid trailing slashes).
+ * 3. Always produce a valid base API path for axios.
+ *
+ * How it works:
+ * - In development → uses VITE_BACKEND_URL_LOCAL (e.g. http://localhost:5001)
+ * - In production  → uses VITE_BACKEND_URL (Render or deployed URL)
+ * - Removes trailing slash → prevents malformed URLs like "//api/auth"
  */
+const ENV = import.meta.env; // environment variables provided by Vite
 
-const ENV = import.meta.env;
 
-// Determine backend URL
-let BACKEND_URL = (ENV.MODE === "development" ? ENV.VITE_BACKEND_URL_LOCAL : ENV.VITE_BACKEND_URL);
+// Determine which backend URL to use
+let BACKEND_URL =
+    ENV.MODE === "development"
+        ? ENV.VITE_BACKEND_URL_LOCAL // local dev server
+        : ENV.VITE_BACKEND_URL;      // production server on Render/Vercel/etc.
 
-// Remove trailing slash so `${BACKEND_URL}/api` is always correct
+
+// Prevent trailing slash issues (e.g., "https://domain.com/" → "https://domain.com")
 if (BACKEND_URL?.endsWith("/")) {
     BACKEND_URL = BACKEND_URL.slice(0, -1);
 }
 
-// Fallback if BACKEND_URL is empty (should never happen on Render)
+
+// Final base API endpoint
+// If BACKEND_URL is missing (should not happen in production), fallback to relative "/api"
 const BASE_URL = BACKEND_URL ? `${BACKEND_URL}/api` : "/api";
 
+
+// ======================================================================
+// AXIOS INSTANCE
+// ======================================================================
+// - baseURL: all requests automatically start with /api
+// - withCredentials: allows sending cookies (important for JWT auth)
+// - content-type: all requests use JSON by default
+// ======================================================================
 export const axiosInstance = axios.create({
     baseURL: BASE_URL,
-    withCredentials: true,
+    withCredentials: true, // enables cookies + sessions across domains
     headers: {
         "Content-Type": "application/json",
     },

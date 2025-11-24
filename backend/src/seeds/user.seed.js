@@ -1,15 +1,31 @@
+// Load environment variables from .env file (e.g., MONGODB_URI)
 import { config } from "dotenv";
+
+// Import database connection helper
 import { connectDB } from "../lib/db.js";
+
+// Import User model to insert seed data into the Users collection
 import User from "../models/user.model.js";
 
+
+// Initialize dotenv so we can use process.env values
 config();
 
+
+// ============================================================================
+// SEED DATA
+// Purpose:
+// - These are sample users that will be inserted into the database
+// - Used for testing chat UI, sidebar list, and messaging without signup
+// - Each user contains: email, fullName, password, profilePic
+// ============================================================================
+
 const seedUsers = [
-  // Female Users
+  // ---------------- Female Users ----------------
     {
         email: "emma.thompson@example.com",
         fullName: "Emma Thompson",
-        password: "123456",
+        password: "123456",            // NOTE: This is plaintext for seeding only.
         profilePic: "https://randomuser.me/api/portraits/women/1.jpg",
     },
     {
@@ -55,7 +71,7 @@ const seedUsers = [
         profilePic: "https://randomuser.me/api/portraits/women/8.jpg",
     },
 
-    // Male Users
+  // ---------------- Male Users ----------------
     {
         email: "james.anderson@example.com",
         fullName: "James Anderson",
@@ -98,18 +114,34 @@ const seedUsers = [
         password: "123456",
         profilePic: "https://randomuser.me/api/portraits/men/7.jpg",
     },
-    ];
+];
 
-    const seedDatabase = async () => {
+
+// ============================================================================
+// seedDatabase()
+// Purpose:
+// - Connect to MongoDB
+// - Insert all seed users using insertMany()
+// - Helpful for testing frontend without requiring manual signup
+// ============================================================================
+const seedDatabase = async () => {
     try {
+        // Connect to MongoDB using the connection helper
         await connectDB();
 
+        // Insert all the predefined users into the "users" collection
+        // insertMany() inserts multiple documents at once
         await User.insertMany(seedUsers);
+
         console.log("Database seeded successfully");
+        // 200 OK equivalent → Operation completed successfully
+
     } catch (error) {
         console.error("Error seeding database:", error);
+        // 500 Internal Server Error → Something went wrong during seeding
     }
 };
 
-// Call the function
+
+// Call the function automatically when script runs
 seedDatabase();
