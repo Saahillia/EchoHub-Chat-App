@@ -13,20 +13,15 @@ export const protectRoute = async (req, res, next) => {
     try {
 
         // Extract JWT token from cookies
-        const token = 
-            req.cookies.jwt || 
-            req.headers.authorization?.replace("Bearer ", "");
-        
+        const token = req.cookies.jwt;
         // If token is missing → User is not logged in
         // 401 Unauthorized → Client must log in first
         if (!token) {
             return res.status(401).json({ message: "Unauthorized - No Token Provided" });
         }
-
         // Verify the JWT token using the secret key from the .env file
         // If the token is expired or invalid, jwt.verify() will throw an error
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
         // If decoding fails (rare case)
         // 401 Unauthorized → Token cannot be trusted
         if (!decoded) {
@@ -43,18 +38,15 @@ export const protectRoute = async (req, res, next) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-
         // Attach authenticated user to the request object
         // This allows protected routes to access req.user
         req.user = user;
-
         // Move to next route / controller
         next();
 
     } catch (error) {
         // If anything goes wrong in verification or database fetch
         console.log("Error in protectRoute Middleware:", error.message);
-
         // 500 Internal Server Error → Something broke on server side
         res.status(500).json({ message: "Internal server error" });
     }
